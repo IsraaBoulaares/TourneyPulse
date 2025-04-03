@@ -1,11 +1,19 @@
 package tn.esprit.ms.msreservation.Service;
 
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tn.esprit.ms.msreservation.entities.Reservation;
 import tn.esprit.ms.msreservation.repository.ReservationRepository;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -14,15 +22,15 @@ public class ReservationService {
     @Autowired
     private ReservationRepository reservationRepository;
 
-    public Reservation createReservation(Reservation reservation) {
+  /*public Reservation createReservation(Reservation reservation) {
         return reservationRepository.save(reservation);
-    }
-   /* public Reservation createReservation(Reservation reservation) throws WriterException {
+    }*/
+    public Reservation createReservation(Reservation reservation) throws WriterException {
         // Save the reservation to get the ID
         Reservation savedReservation = reservationRepository.save(reservation);
 
         // Generate QR code
-        /*String qrContent = "Reservation Details:\n" +
+        String qrContent = "Reservation Details:\n" +
                 "ID: " + savedReservation.getId() + "\n" +
                 "Stade ID: " + savedReservation.getIdStade() + "\n" +
                 "Première équipe: " + savedReservation.getIdPremiereEquipe() + "\n" +
@@ -33,11 +41,11 @@ public class ReservationService {
 
         // Save again with QR code
         return reservationRepository.save(savedReservation);
-    }*/
+    }
 
-  /*  private String generateQRCode(String content) throws WriterException {
+   private String generateQRCode(String content) throws WriterException {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
-        BitMatrix bitMatrix = qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, 300, 300);
+        BitMatrix bitMatrix = qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, 200, 200);
         ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
         try {
             MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
@@ -47,7 +55,7 @@ public class ReservationService {
         }
         return Base64.getEncoder().encodeToString(pngOutputStream.toByteArray());
     }
-*/
+
     public List<Reservation> getAllReservations() {
         return reservationRepository.findAll();
     }
