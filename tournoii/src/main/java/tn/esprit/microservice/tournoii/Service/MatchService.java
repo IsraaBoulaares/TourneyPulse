@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import tn.esprit.microservice.tournoii.entity.match;
 import tn.esprit.microservice.tournoii.Repository.MatchRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,4 +45,9 @@ public class MatchService {
         }
         matchRepository.deleteById(id);
     }
+
+    public List<match> getMatchsByDate(LocalDateTime start, LocalDateTime end) {
+        return matchRepository.findByDateMatchBetween(start, end);
+    }
+
 }
