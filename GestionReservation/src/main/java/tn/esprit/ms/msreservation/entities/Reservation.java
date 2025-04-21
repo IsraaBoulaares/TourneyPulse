@@ -25,4 +25,7 @@ public class Reservation {
 
     @Column(columnDefinition = "TEXT")
     private String qrCodeBase64;
+
+// hello friend 👋 
+
 }
