@@ -2,88 +2,144 @@
 
 # 🏆 TourneyPulse
 
-🧩 **Architecture de Microservices avec Spring Boot, Eureka et API Gateway**
+# Microservices Sports Management Platform
 
-**TourneyPulse** est une plateforme modulaire pour la gestion des tournois sportifs. Elle suit une architecture microservices basée sur **Spring Boot**, **Spring Cloud Eureka** (pour la découverte des services) et **Spring Cloud Gateway** (pour le routage intelligent des requêtes).
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue)](https://www.docker.com/)
+[![Spring](https://img.shields.io/badge/Spring-Boot-green)](https://spring.io/projects/spring-boot)
+[![Keycloak](https://img.shields.io/badge/Keycloak-23.0.1-orange)](https://www.keycloak.org/)
+[![Eureka](https://img.shields.io/badge/Eureka-Service%20Discovery-lightgrey)](https://cloud.spring.io/spring-cloud-netflix/multi/multi_spring-cloud-eureka-server.html)
 
-Le système se compose de plusieurs microservices spécialisés, chacun dédié à une fonctionnalité bien précise :
+A comprehensive microservices-based platform for sports management, including team management, tournament organization, stadium management, and reservation systems.
 
-## 🔗 Microservices inclus
+## Architecture Overview
 
-- 🎯 **Eureka** – Serveur de découverte des services
-- 🚪 **Gateway** – Passerelle API pour centraliser les requêtes
-- 🏟️ **StadiumManagement** – Gestion des stades
-- 📝 **GestionReservation** – Réservation des matchs et stades
-- 👥 **GestionEquipe** – Gestion des équipes
-- 🎉 **Evenement** – Gestion des événements
-- 🏆 **Tournoii** – Organisation et gestion des tournois
+This project uses a microservices architecture with the following components:
 
-## 🔧 Technologies utilisées
+- **Service Discovery**: Eureka server for service registration and discovery
+- **API Gateway**: Spring Cloud Gateway for routing and load balancing
+- **Security**: Keycloak for authentication and authorization
+- **Configuration**: Spring Cloud Config Server for centralized configuration
+- **Microservices**: Individual services for different business domains
+- **Databases**: MySQL for relational data and MongoDB for document storage
 
-- Java 17
-- Spring Boot 3.2.4
-- Spring Cloud 
-- Spring Cloud Gateway
-- Eureka Server & Eureka Client
-- Maven
+## Services
 
-## 📁 Structure du projet
+| Service | Port | Description |
+|---------|------|-------------|
+| Eureka | 8761 | Service discovery and registration |
+| Keycloak | 8080 | Identity and access management |
+| Gateway | 8093 | API Gateway for routing requests |
+| Config Server | 8888 | Centralized configuration management |
+| User Service | 8033 | User management and authentication |
+| Stadium Management | 8082 | Stadium and venue management |
+| Team Management | 8066 | Team and player management |
+| Tournament Management | 8087 | Tournament organization and scheduling |
+| Reservation Service | 8086 | Booking and reservation management |
+| Reclamation Service | 3000 | Complaint and feedback management (Express.js) |
+
+## Prerequisites
+
+- [Docker](https://www.docker.com/products/docker-desktop) and Docker Compose
+- [Git](https://git-scm.com/downloads)
+- At least 8GB RAM for running all containers
+
+## Getting Started
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/yourusername/sports-management-platform.git
+cd sports-management-platform
+```
+
+### Start the Services
+
+```bash
+docker-compose up -d
+```
+
+This will build and start all the services defined in the docker-compose file.
+
+### Accessing Services
+
+- **Eureka Dashboard**: http://localhost:8761
+- **Keycloak Admin Console**: http://localhost:8080/admin (admin/admin)
+- **API Gateway**: http://localhost:8093
+- **Config Server**: http://localhost:8888
+
+## Development Setup
+
+### Project Structure
 
 ```
 .
-├── eurekea/               --> Serveur de découverte Eureka
-├── Gateway/               --> Passerelle API Gateway
-├── SatduimManagment/      --> Microservice de gestion des stades
-├── GestionReservation/    --> Microservice de gestion des réservations
-├── GestionEquipe/         --> Microservice de gestion des équipes
-├── evenement/             --> Microservice de gestion des événements
-└── tournoii/              --> Microservice de gestion des tournois
+├── ConfigServer/      # Centralized configuration service
+├── Gateway/           # API Gateway service
+├── eurekea/           # Service discovery server
+├── user/              # User management service
+├── GestionEquipe/     # Team management service
+├── tournoii/          # Tournament management service
+├── SatduimManagment/  # Stadium management service
+├── GestionReservation/# Reservation service
+├── gestReclamation/   # Complaint management service (Node.js/Express)
+├── keycloak/          # Keycloak configuration files
+└── docker-compose.yml # Docker Compose configuration
 ```
 
-## ▶️ Lancement du projet
+### Building Individual Services
 
-1. **Démarrer Eureka** (port `8761`) :
-   ```bash
-   cd eurekea
-   mvn spring-boot:run
-   ```
+Each service can be built and run independently during development:
 
-2. **Démarrer Gateway** (port `8093`) :
-   ```bash
-   cd ../Gateway
-   mvn spring-boot:run
-   ```
+```bash
+cd [service-directory]
+# For Spring Boot services
+./mvnw clean package
+# For Node.js service
+npm install
+```
 
-3. **Démarrer les microservices** :
-   (à faire pour chaque service)
-   ```bash
-   cd ../<nom-du-service>
-   mvn spring-boot:run
-   ```
+## Security
 
-> Exemple de fonctionnement :  
-> `http://localhost:8093/equipe` ou `http://localhost:8093/reservations`
+The platform uses Keycloak for security with:
+- OAuth 2.0 / OpenID Connect protocols
+- JWT token-based authentication
+- Role-based access control
+- Single Sign-On capabilities
 
-## ✅ Fonctionnalités couvertes
+A pre-configured realm is imported during startup from `keycloak/realm-export.json`.
 
-- Découverte automatique des services avec **Eureka**
-- Routage centralisé via **API Gateway**
-- Architecture évolutive, modulaire et maintenable
-- Intégration de plusieurs services métiers autour du sport
-- Préparation pour authentification, monitoring, et scalabilité
+## Network Configuration
 
-## 🧪 Fonctionnalités à venir
+All services communicate over a dedicated Docker network (`app-network`) with persistent storage volumes for:
+- MySQL data
+- MongoDB data
+- Keycloak data
 
-- Interface utilisateur (Angular)
-- Authentification / Autorisation (JWT)
-- Tableau de bord d’administration
-- Dockerisation complète
+## Troubleshooting
 
-## 🤝 Contribution
+### Service Health Checks
 
-Les contributions sont les bienvenues !  
-N'hésitez pas à forker le projet, ouvrir des issues ou proposer des améliorations.
+- MySQL and MongoDB have configured health checks to ensure availability
+- Keycloak has a health check endpoint to confirm readiness
 
-## 📄 Licence
+### Container Logs
 
-Ce projet est open-source sous licence MIT.
+```bash
+# View logs for a specific service
+docker logs [container_name]
+
+# Follow logs in real-time
+docker logs -f [container_name]
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
