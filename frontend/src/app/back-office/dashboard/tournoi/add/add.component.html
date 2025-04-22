@@ -1,0 +1,26 @@
+<div class="container mt-4">
+  <h2>Ajouter un Tournoi</h2>
+  <form (ngSubmit)="onSubmit()" #tournoiForm="ngForm">
+    <div class="mb-3">
+      <label for="nom" class="form-label">Nom du tournoi</label>
+      <input type="text" class="form-control" id="nom" [(ngModel)]="tournoi.nom" name="nom" required />
+    </div>
+
+    <div class="mb-3">
+      <label for="lieu" class="form-label">Lieu</label>
+      <input type="text" class="form-control" id="lieu" [(ngModel)]="tournoi.lieu" name="lieu" required />
+    </div>
+
+    <div class="mb-3">
+      <label for="date" class="form-label">Date</label>
+      <input type="date" class="form-control" id="date" [(ngModel)]="tournoi.date" name="date" required />
+    </div>
+
+    <div class="mb-3">
+      <label for="classement" class="form-label">Classement</label>
+      <input type="text" class="form-control" id="classement" [(ngModel)]="tournoi.classement" name="classement" required />
+    </div>
+
+    <button type="submit" class="btn btn-success" [disabled]="!tournoiForm.valid">Soumettre le tournoi</button>
+  </form>
+</div>

@@ -1,0 +1,119 @@
+<div class="form-wrapper">
+  <h1 class="admin-title">
+    <i class="fas fa-list me-2"></i> Liste des Réservations
+  </h1>
+
+  <div class="actions" style="text-align: right; margin: 1rem 0;">
+    <button class="btn btn-primary" (click)="onAddReservation()">
+      <i class="fas fa-plus me-2"></i> Ajouter Réservation
+    </button>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="filters">
+    <div class="filter-group">
+      <label for="statusFilter">Filtrer par statut :</label>
+      <select id="statusFilter" class="form-select" [(ngModel)]="statusFilter" (change)="filterReservations()">
+        <option value="">Tous</option>
+        <option value="CONFIRMED">Confirmé</option>
+        <option value="PENDING">En attente</option>
+        <option value="CANCELLED">Annulé</option>
+      </select>
+    </div>
+    <div class="search-group">
+      <input
+        type="text"
+        placeholder="Rechercher par nom..."
+        [(ngModel)]="searchQuery"
+        (input)="filterReservations()"
+        class="search-input"
+      />
+      <span class="search-icon"><i class="fas fa-search"></i></span>
+    </div>
+  </div>
+
+  <!-- Alerts -->
+  <div *ngIf="successMessage" class="alert alert-success">
+    {{ successMessage }}
+    <button type="button" class="alert-close" (click)="successMessage = null">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+  <div *ngIf="errorMessage" class="alert alert-error">
+    {{ errorMessage }}
+    <button type="button" class="alert-close" (click)="errorMessage = null">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+
+  <div class="table-wrapper">
+    <table class="reservation-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Équipe 1</th>
+          <th>Équipe 2</th>
+          <th>Organisateur</th>
+          <th>QR Code</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let reservation of paginatedReservations">
+          <td>{{ reservation.date | date:'mediumDate' }}</td>
+          <td>{{ reservation.idPremiereEquipe }}</td>
+          <td>{{ reservation.idDeuxiemeEquipe }}</td>
+          <td>{{ reservation.idOrganisateur }}</td>
+          <td>
+            <img
+              *ngIf="reservation.qrCodeBase64"
+              [src]="'data:image/png;base64,' + reservation.qrCodeBase64"
+              alt="QR Code"
+              width="50"
+              height="50"
+            />
+          </td>
+          <td class="d-flex align-items-center gap-2">
+            <select
+              class="form-select"
+              (change)="onStatusChange($event, reservation)"
+              [value]="reservation.status || ''"
+              style="width: auto;"
+            >
+              <option value="" disabled selected>Sélectionner un statut</option>
+              <option value="CONFIRMED">Confirmé</option>
+              <option value="PENDING">En attente</option>
+              <option value="CANCELLED">Annulé</option>
+            </select>
+
+            <!-- Bouton de suppression -->
+            <button
+              class="btn btn-danger btn-sm"
+              (click)="onDeleteReservation(reservation.id)"
+              title="Supprimer la réservation"
+            >
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="filteredReservations.length === 0" class="no-reservations">
+      <p>Aucune réservation trouvée.</p>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="filteredReservations.length > 0">
+      <button class="btn btn-secondary" [disabled]="currentPage === 1" (click)="previousPage()">
+        <i class="fas fa-chevron-left me-1"></i> Précédent
+      </button>
+      <span class="page-info">
+        Page {{ currentPage }} sur {{ totalPages }}
+      </span>
+      <button class="btn btn-secondary" [disabled]="currentPage === totalPages" (click)="nextPage()">
+        Suivant <i class="fas fa-chevron-right me-1"></i>
+      </button>
+    </div>
+  </div>
+</div>

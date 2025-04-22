@@ -1,0 +1,98 @@
+<!-- back-office/components/dashboard/stade/stade.component.html -->
+<div class="form-wrapper">
+  <h1 class="admin-title">
+    <i class="fas fa-stadium me-2"></i> Liste des Stades
+  </h1>
+
+  <div class="actions" style="text-align: right; margin: 1rem 0;">
+    <button class="btn btn-primary" (click)="onAddStade()">
+      <i class="fas fa-plus me-2"></i> Ajouter Stade
+    </button>
+    <button class="btn btn-secondary ms-2" (click)="downloadExcel()">
+      <i class="fas fa-download me-2"></i> Exporter en Excel
+    </button>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="filters">
+    <div class="search-group">
+      <input
+        type="text"
+        placeholder="Rechercher par nom ou lieu..."
+     
+        (input)="filterStades()"
+        class="search-input"
+      />
+      <span class="search-icon"><i class="fas fa-search"></i></span>
+    </div>
+  </div>
+
+  <!-- Alerts -->
+  <div *ngIf="successMessage" class="alert alert-success">
+    {{ successMessage }}
+    <button type="button" class="alert-close" (click)="successMessage = null">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+    <button type="button" class="alert-close" (click)="errorMessage = null">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+
+  <div class="table-wrapper">
+    <table class="stade-table">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Lieu</th>
+          <th>Capacité</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let stade of paginatedStades">
+          <td>{{ stade.name }}</td>
+          <td>{{ stade.location }}</td>
+          <td>{{ stade.capacity }}</td>
+          <td class="d-flex align-items-center gap-2">
+            <button
+              class="btn btn-primary btn-sm"
+              (click)="stade.id !== undefined ? onEditStade(stade.id) : null"
+              title="Modifier le stade"
+              aria-label="Modifier le stade"
+            >
+              <i class="fas fa-edit"></i>
+            </button>
+            <button
+              class="btn btn-danger btn-sm"
+              (click)="stade.id !== undefined ? onDeleteStade(stade.id) : null"
+              title="Supprimer le stade"
+              aria-label="Supprimer le stade"
+            >
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="filteredStades.length === 0" class="no-stades">
+      <p>Aucun stade trouvé.</p>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="filteredStades.length > 0">
+      <button class="btn btn-secondary" [disabled]="currentPage === 1" (click)="previousPage()">
+        <i class="fas fa-chevron-left me-1"></i> Précédent
+      </button>
+      <span class="page-info">
+        Page {{ currentPage }} sur {{ totalPages }}
+      </span>
+      <button class="btn btn-secondary" [disabled]="currentPage === totalPages" (click)="nextPage()">
+        Suivant <i class="fas fa-chevron-right me-1"></i>
+      </button>
+    </div>
+  </div>
+</div>
