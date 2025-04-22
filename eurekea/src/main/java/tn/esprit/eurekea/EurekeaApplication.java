@@ -10,7 +10,6 @@ public class EurekeaApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(EurekeaApplication.class, args);
-        // hello world 
     }
 
 }

@@ -1,0 +1,22 @@
+{
+  "realm": "myapp",
+  "enabled": true,
+  "clients": [
+    {
+      "clientId": "GateWay",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "my-super-secret",
+      "serviceAccountsEnabled": true,
+      "rootUrl": "http://localhost:8093",
+      "baseUrl": "/",
+      "adminUrl": "http://localhost:8093",
+      "redirectUris": [
+        "http://localhost:8093/*",
+        "http://localhost:8093/teams/*"
+
+      ]
+    }
+  ]
+}

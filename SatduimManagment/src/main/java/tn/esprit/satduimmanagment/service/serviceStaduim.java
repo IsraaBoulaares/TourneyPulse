@@ -12,5 +12,7 @@ public interface serviceStaduim {
     Stade updateStade(Long id, Stade stade);
     void deleteStade(Long id);
 
+    List<Stade> searchStades(String name, String location, Integer minCapacity);
+
 
 }

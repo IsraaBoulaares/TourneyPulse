@@ -1,5 +1,6 @@
 package tn.esprit.gestionequipe.service;
 
+import org.springframework.data.domain.Page;
 import tn.esprit.gestionequipe.entities.Team;
 import tn.esprit.gestionequipe.entities.Users;
 
@@ -17,5 +18,8 @@ public interface TeamService {
 
     Users createUser(Users users);
 
-    public String searchTeam(String teamName);
+    Page<Team> getAllTeamsPaginated(int page, int size);
+
+
+
 }

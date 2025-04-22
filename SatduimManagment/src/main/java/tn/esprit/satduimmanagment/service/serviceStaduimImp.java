@@ -43,5 +43,15 @@ public class serviceStaduimImp implements serviceStaduim {
     }
 
 
+    @Override
+    public List<Stade> searchStades(String name, String location, Integer minCapacity) {
+        return stadeRepository.findAll().stream()
+                .filter(stade -> name == null || stade.getName().toLowerCase().contains(name.toLowerCase()))
+                .filter(stade -> location == null || stade.getLocation().toLowerCase().contains(location.toLowerCase()))
+                .filter(stade -> minCapacity == null || stade.getCapacity() >= minCapacity)
+                .toList();
+    }
+
+
 
 }

@@ -1,12 +1,15 @@
 package tn.esprit.gestionequipe.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
+import tn.esprit.gestionequipe.DTO.Stade;
 import tn.esprit.gestionequipe.entities.Team;
 import tn.esprit.gestionequipe.entities.TeamStatus;
 import tn.esprit.gestionequipe.entities.Users;
+import tn.esprit.gestionequipe.feign.StadeClient;
 import tn.esprit.gestionequipe.repository.TeamRepository;
 import tn.esprit.gestionequipe.repository.UserRepository;
 
@@ -23,7 +26,20 @@ public class TeamServiceImpl implements TeamService {
     private UserRepository userRepository;
 
     @Autowired
-    private RestTemplate restTemplate;
+    private StadeClient stadeClientService;
+
+
+
+    public Stade getStadeById(Long id) {
+        return stadeClientService.getStadeById(id);
+    }
+
+    public List<Stade> getAllStades() {
+        return stadeClientService.getAllStades();
+    }
+
+
+
 
     @Override
     @Transactional
@@ -132,10 +148,13 @@ public class TeamServiceImpl implements TeamService {
         return userRepository.save(users);
     }
 
+
+
+
     @Override
-    public String searchTeam(String teamName) {
-        String url = "https://www.thesportsdb.com/api/v1/json/3/searchteams.php?t={team}";
-        return restTemplate.getForObject(url, String.class, teamName);
+    public Page<Team> getAllTeamsPaginated(int page, int size) {
+        return teamRepository.findAll(PageRequest.of(page, size));
     }
+
 }
 

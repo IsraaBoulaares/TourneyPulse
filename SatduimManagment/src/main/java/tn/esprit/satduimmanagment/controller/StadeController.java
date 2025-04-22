@@ -133,6 +133,15 @@ public class StadeController {
         return style;
     }
 
+    @GetMapping("/search")
+    public List<Stade> searchStades(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) Integer minCapacity
+    ) {
+        return stadeService.searchStades(name, location, minCapacity);
+    }
+
 
 
 

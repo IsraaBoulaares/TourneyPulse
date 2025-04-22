@@ -1,0 +1,72 @@
+spring:
+  cloud:
+    config:
+      enabled: true
+      uri: http://config-server:8888/
+  config:
+    import: optional:configserver:http://config-server:8888/
+  datasource:
+    url: jdbc:mysql://localhost:3306/tourneyzzzz?createDatabaseIfNotExist=true
+    username: root
+    password: # Add your MySQL password here
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: bessemhasni530@gmail.com
+    password: shsw rbby citw fzfg  # Your valid App Password for Gmail
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            trust: smtp.gmail.com
+          connectiontimeout: 5000
+          timeout: 3000
+          writetimeout: 5000
+        debug: true
+  profiles:
+    active: dev
+  servlet:
+    multipart:
+      max-file-size: 50MB
+
+application:
+  security:
+    jwt:
+      secret-key: A4tLfWyM2kSZFx+k+dZTIzHUI4m/vH4IlJvQyDhglkI=
+      expiration: 8640000  # 24 hours in milliseconds
+  mailing:
+    frontend:
+      activation-url: http://localhost:4200/activate-account
+    from-email: bessemhasni530@gmail.com
+
+server:
+  port: 8088
+  servlet:
+    context-path: /api/v1/
+
+springdoc:
+  default-produces-media-type: application/json
+
+logging:
+  level:
+    org.springframework: DEBUG
+    org.springframework.mail: DEBUG
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    register-with-eureka: true

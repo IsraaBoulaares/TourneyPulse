@@ -1,0 +1,265 @@
+services:
+  eureka:
+    container_name: eureka
+    image: ghazii2001/microservicefinal-eureka:v3
+    build:
+      context: ./eurekea
+      dockerfile: Dockerfile
+    ports:
+      - "8761:8761"
+    hostname: eureka
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:23.0.1
+    container_name: keycloak
+    command: start-dev --import-realm --hostname=keycloak --hostname-strict=false
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KEYCLOAK_FRONTEND_URL: http://keycloak:8080
+    ports:
+      - "8080:8080"
+    volumes:
+      - keycloak-data:/opt/keycloak/data
+      - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health/ready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+
+
+
+  gestionEquipe:
+    container_name: gestionEquipe
+    image: ghazii2001/microservicefinal-gestionequipe:v3
+    build:
+      context: ./GestionEquipe
+      dockerfile: Dockerfile
+    ports:
+      - "8066:8066"
+    hostname: gestionEquipe
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
+    depends_on:
+      - eureka
+      - keycloak
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  gestionTournoi:
+    container_name: gestionTournoi
+    image: ghazii2001/microservicefinal-gestiontournoi:v3
+    build:
+      context: ./tournoii
+      dockerfile: Dockerfile
+    ports:
+      - "8087:8087"
+    hostname: gestionTournoi
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
+    depends_on:
+      - eureka
+      - keycloak
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  stadiummanagement:
+    container_name: stadiummanagement
+    image: ghazii2001/microservicefinal-stadiummanagement:v3
+    build:
+      context: ./SatduimManagment
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    hostname: stadiummanagement
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/ihebdata?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+    depends_on:
+      - eureka
+      - mysql
+      - keycloak
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  gateway:
+    container_name: gateway
+    image: ghazii2001/microservicefinal-gateway:v3
+    build:
+      context: ./Gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8093:8093"
+    hostname: gateway
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://keycloak:8080/realms/myapp
+    depends_on:
+      - eureka
+      - keycloak
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  user:
+    container_name: user
+    image: ghazii2001/microservicefinal-user:v3
+    build:
+      context: ./user
+      dockerfile: Dockerfile
+    ports:
+      - "8033:8033"
+    hostname: user
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/bessemdata?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_APPLICATION_NAME=user
+      - SERVER_SERVLET_CONTEXT_PATH=/api/v1/
+      - APPLICATION_MAILING_FRONTEND_ACTIVATION_URL=http://frontend:4200/activate-account
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+      keycloak:
+        condition: service_started
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  msreservation:
+    container_name: msreservation
+    image: ghazii2001/microservicefinal-msreservation:v3
+    build:
+      context: ./GestionReservation
+      dockerfile: Dockerfile
+    ports:
+      - "8086:8086"
+    hostname: msreservation
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/msreservation?createDatabaseIfNotExist=true&useSSL=false&max_allowed_packet=15728640
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_APPLICATION_NAME=MsReservation
+    depends_on:
+      - eureka
+      - mysql
+      - keycloak
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  express:
+    container_name: express
+    image: ghazii2001/microservicefinal-express:v3
+    build:
+      context: /Users/ghazi.saoudi/Desktop/gestReclamation
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - MONGO_URL=mongodb://mongodb:27017/mydatabase
+    depends_on:
+      - eureka
+      - mongodb
+      - keycloak
+    networks:
+      - app-network
+    restart: unless-stopped
+
+
+
+
+  config-server:
+    container_name: config-server
+    image: ghazii2001/microservicefinal-configserver:v1
+    build:
+      context: ./ConfigServer
+      dockerfile: Dockerfile
+    ports:
+      - "8888:8888"
+    hostname: config-server
+    environment:
+      - SPRING_APPLICATION_NAME=config-server
+      - SERVER_PORT=8888
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
+      - EUREKA_CLIENT_REGISTER_WITH_EUREKA=true
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
+      - SPRING_PROFILES_ACTIVE=native
+      - SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS=file:/config
+    volumes:
+      - ./ConfigServer/config:/config
+    depends_on:
+      - eureka
+    networks:
+      - app-network
+    restart: unless-stopped
+
+
+
+
+
+  mongodb:
+    image: mongo:6.0
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD", "mongo", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ihebdata
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+  mongodb-data:
+  keycloak-data:
+

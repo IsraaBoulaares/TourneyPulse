@@ -1,10 +1,13 @@
 package tn.esprit.gestionequipe.controller;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tn.esprit.gestionequipe.DTO.Stade;
 import tn.esprit.gestionequipe.entities.ChatRequest;
 import tn.esprit.gestionequipe.entities.Team;
 import tn.esprit.gestionequipe.entities.Users;
+import tn.esprit.gestionequipe.feign.StadeClient;
 import tn.esprit.gestionequipe.service.ChatbotService;
 import tn.esprit.gestionequipe.service.TeamService;
 import java.util.List;
@@ -29,7 +32,7 @@ import java.time.LocalDateTime;
 
 
 @RestController
-@RequestMapping("/teams")
+@RequestMapping("/equipe")
 public class TeamController {
 
     @Autowired
@@ -37,6 +40,29 @@ public class TeamController {
 
     @Autowired
     private ChatbotService chatbotService;
+
+
+
+    @Autowired
+    private StadeClient stadeClientService;
+
+
+    @RequestMapping("/stades")
+    public List<Stade> getAllStades() {
+        return stadeClientService.getAllStades();
+    }
+
+    @RequestMapping("/stades/{id}")
+    public Stade getStadeById(@PathVariable Long id) {
+        return stadeClientService.getStadeById(id);
+    }
+
+
+
+
+
+
+
 
     @PostMapping
     public ResponseEntity<Team> createTeam(@RequestBody Team team) {
@@ -192,29 +218,15 @@ public class TeamController {
     }
 
 
-    @GetMapping("/search")
-    public ResponseEntity<String> searchTeam(@RequestParam String name) {
-        String response = teamService.searchTeam(name);
-        return ResponseEntity.ok(response);
+
+
+    @GetMapping("/paginated")
+    public ResponseEntity<Page<Team>> getTeamsPaginated(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(teamService.getAllTeamsPaginated(page, size));
     }
 
 
+
 }
-
-// For adding paragraphs to the PDF
-// For adding paragraphs to the PDF
-// For adding paragraphs to the PDF
-// For adding paragraphs to the PDF
-// For adding paragraphs to the PDF
-// For adding paragraphs to the PDF
-// For adding paragraphs to the PDF
-// For adding paragraphs to the PDF
-// For adding paragraphs to the PDF
-
-
-
-
-
-
-
-
